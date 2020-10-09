@@ -14,7 +14,7 @@ class ItemModel(db.Model):
 
     @classmethod
     def search_by_name(cls,name):
-        search=db.session.query(ItemModel).filter_by(ItemModel.name==name).first()
+        search = db.session.query(ItemModel).filter(ItemModel.name == name).first()
         if search:
             return search
 

@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_restful import Api,Resource
+from os import environ
 from db import db
 import config
 from resources.item import Item
 
 app=Flask(__name__)
-app.config.from_envvar('APP_SETTINGS')
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 api=Api(app)
 db.init_app(app)
