@@ -14,12 +14,11 @@ class UserModel(db.Model):
     
     @classmethod
     def search_by_name(cls,name):
-        search = db.session.query(UserModel).filter(UserModel.name == name).all()
+        search = db.session.query(UserModel).filter(UserModel.name == name).first()
         if search:
             return search
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
-
     

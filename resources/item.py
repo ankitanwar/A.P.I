@@ -2,6 +2,7 @@ from flask_restful import Resource,reqparse
 from flask import request
 from models.item import ItemModel
 from schema.items import ItemSchema
+from flask_jwt_extended import jwt_required,fresh_jwt_required
 
 item_schema=ItemSchema()
 
@@ -14,6 +15,7 @@ class Item(Resource):
         else:
             return {"message":"Item doesn't exist in the database"}
 
+    @fresh_jwt_required
     def post(self,name):
         find=ItemModel.search_by_name(name)
         if find:
@@ -30,5 +32,14 @@ class Item(Resource):
                 return {"Message":"Item has been added to the database Successfully"}
             except Exception as e:
                 return {"Message":"Some error has been occured {}".format(e)}
+
+    @jwt_required
+    def delete(self,name):
+        find=ItemModel.search_by_name(name)
+        if find:
+            find.delete_frm_db()
+            return {"message":"Item has been deleted from the database"}
+        else:
+            return {"message":"Item not found in the database"}
 
     
