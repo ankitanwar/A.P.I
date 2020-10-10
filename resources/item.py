@@ -1,10 +1,11 @@
 from flask_restful import Resource,reqparse
+from flask import request
 from models.item import ItemModel
+from schema.items import ItemSchema
+
+item_schema=ItemSchema()
 
 class Item(Resource):
-
-    sender=reqparse.RequestParser()
-    sender.add_argument('price',required=True,type=int,help='Price field cannot be empty')
 
     def get(self,name):
         find=ItemModel.search_by_name(name)
@@ -18,8 +19,12 @@ class Item(Resource):
         if find:
             return {"message":"Item with name {} already exist in the database".format(name)}
         else:
-            incoming_data=Item.sender.parse_args()
-            data=ItemModel(name,incoming_data['price'])
+            json_data=request.get_json()
+            json_data['name']=name
+
+            data=item_schema.load(json_data)
+            
+            data=ItemModel(**data)
             try:
                 data.save_to_db()
                 return {"Message":"Item has been added to the database Successfully"}
