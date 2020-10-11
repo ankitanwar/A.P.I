@@ -7,9 +7,8 @@ class ItemModel(db.Model):
     name=db.Column(db.String(50),unique=True,nullable=False)
     price=db.Column(db.Integer)
 
-    def __init__(self,name,price):
-        self.name=name
-        self.price=price
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship("UserModel")
 
     @classmethod
     def search_by_name(cls,name):

@@ -3,6 +3,7 @@ from flask import request
 from models.item import ItemModel
 from schema.items import ItemSchema
 from flask_jwt_extended import jwt_required,fresh_jwt_required
+from models.user import UserModel
 
 item_schema=ItemSchema()
 
@@ -35,11 +36,22 @@ class Item(Resource):
 
     @jwt_required
     def delete(self,name):
-        find=ItemModel.search_by_name(name)
-        if find:
-            find.delete_frm_db()
-            return {"message":"Item has been deleted from the database"}
+        data=request.get_json()
+        user=UserModel.search_by_name(data['name'])
+
+        if user:
+            _id=user.id
+            find=ItemModel.search_by_name(name)
+            if find and _id==find.user_id:
+                try:
+                    find.delete_frm_db()
+                    return {"message":"item has been deleted from the database"}
+                except Exception as e:
+                    return {"message":"Some error has been occured {}".format(e)}
+            else:
+                return {"message":"User id doen't match"}
         else:
-            return {"message":"Item not found in the database"}
+            return {"message":"Invalid id and password "}                        
+
 
     
